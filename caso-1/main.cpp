@@ -63,21 +63,11 @@ unsigned char* loadPixels(QString input, int &width, int &height){
     return pixelData;
 }
 
-    int seed = 0;
-    int n_pixels = 0;
 
-    // Carga los datos de enmascaramiento desde un archivo .txt (semilla + valores RGB)
-    unsigned int *maskingData = loadSeedMasking("M1.txt", seed, n_pixels);
 
-    // Muestra en consola los primeros valores RGB leídos desde el archivo de enmascaramiento
-    for (int i = 0; i < n_pixels * 3; i += 3) {
-        cout << "Pixel " << i / 3 << ": ("
-             << maskingData[i] << ", "
-             << maskingData[i + 1] << ", "
-             << maskingData[i + 2] << ")" << endl;
-    }
-    // Libera la memoria usada para los datos de enmascaramiento
-    if (maskingData != nullptr)
+
+// Libera la memoria usada para los datos de enmascaramiento
+if (maskingData != nullptr)
 
 }
 bool exportImage(unsigned char* pixelData, int width,int height, QString archivoSalida){
@@ -183,8 +173,66 @@ bool verificarEnmascaramiento(unsigned char* generado, unsigned char* mascara, u
     return true;
 }
 // CASO 1
+int main(int argc, char *argv[]) {
+    QCoreApplication a(argc, argv);
 
+    int width = 0, height = 0;
 
+    // Cargar las imágenes BMP
+    unsigned char* I_O = loadPixels("I_O.bmp", width, height);
+    unsigned char* I_M = loadPixels("I_M.bmp", width, height);
+    unsigned char* M   = loadPixels("M.bmp",   width, height);
 
+    int size = width * height * 3;
 
+    // Paso 1: P1 = I_O XOR I_M
+    unsigned char* P1 = new unsigned char[size];
+    aplicarXOR(I_O, I_M, P1, size);
 
+    // Verificar enmascaramiento con M1.txt
+    int seed1 = 0, n1 = 0;
+    unsigned int* M1_txt = loadSeedMasking("M1.txt", seed1, n1);
+    for (int i = 0; i < n1 * 3; i += 3) {
+        std::cout << "M1 - Pixel " << i / 3 << ": ("
+                  << M1_txt[i] << ", "
+                  << M1_txt[i + 1] << ", "
+                  << M1_txt[i + 2] << ")" << std::endl;
+    }
+    if (!verificarEnmascaramiento(P1, M, M1_txt, seed1, n1)) {
+        cout << "Error: M1.txt no coincide" << endl;
+        return 0;
+    }
+
+    // Paso 2: P2 = rotar derecha P1 (3 bits)
+    unsigned char* P2 = new unsigned char[size];
+    rotarImagen(P1, P2, size, 3);
+
+    // Verificar enmascaramiento con M2.txt
+    int seed2 = 0, n2 = 0;
+    unsigned int* M2_txt = loadSeedMasking("M2.txt", seed2, n2);
+    for (int i = 0; i < n2 * 3; i += 3) {
+        std::cout << "M2 - Pixel " << i / 3 << ": ("
+                  << M2_txt[i] << ", "
+                  << M2_txt[i + 1] << ", "
+                  << M2_txt[i + 2] << ")" << std::endl;
+    }
+    if (!verificarEnmascaramiento(P2, M, M2_txt, seed2, n2)) {
+        cout << "Error: M2.txt no coincide" << endl;
+        return 0;
+    }
+
+    // Paso 3: P3 = P2 XOR I_M → imagen reconstruida
+    unsigned char* P3 = new unsigned char[size];
+    aplicarXOR(P2, I_M, P3, size);
+
+    // Exportar imagen reconstruida
+    exportImage(P3, width, height, "Reconstruida_Caso1.bmp");
+    cout << "Reconstrucción del Caso 1 completada." << endl;
+
+    // Liberar memoria
+    delete[] I_O; delete[] I_M; delete[] M;
+    delete[] P1; delete[] P2; delete[] P3;
+    delete[] M1_txt; delete[] M2_txt;
+
+    return 0;
+}
