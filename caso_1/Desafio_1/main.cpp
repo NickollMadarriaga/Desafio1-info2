@@ -7,33 +7,6 @@ using namespace std;
 unsigned char* loadPixels(QString input, int &width, int &height);
 bool exportImage(unsigned char* pixelData, int width,int height, QString archivoSalida);
 unsigned int* loadSeedMasking(const char* nombreArchivo, int &seed, int &n_pixels);
-int main()
-{
-    // Definición de rutas de archivo de entrada (imagen original) y salida (imagen modificada)
-    QString archivoEntrada = "I_O.bmp";
-    QString archivoSalida = "I_D.bmp";
-
-    // Variables para almacenar las dimensiones de la imagen
-    int height = 0;
-    int width = 0;
-
-    // Carga la imagen BMP en memoria dinámica y obtiene ancho y alto
-    unsigned char *pixelData = loadPixels(archivoEntrada, width, height);
-    // Exporta la imagen modificada a un nuevo archivo BMP
-    bool exportI = exportImage(pixelData, width, height, archivoSalida);
-
-    // Muestra si la exportación fue exitosa (true o false)
-    cout << exportI << endl;
-
-    // Libera la memoria usada para los píxeles
-    delete[] pixelData;
-    pixelData = nullptr;
-    {
-        delete[] maskingData;
-        maskingData = nullptr;
-    }
-    return 0; // Fin del programa
-}
 unsigned char* loadPixels(QString input, int &width, int &height){
     // Cargar la imagen BMP desde el archivo especificado (usando Qt)
     QImage imagen(input);
@@ -61,14 +34,6 @@ unsigned char* loadPixels(QString input, int &width, int &height){
     }
     // Retorna el puntero al arreglo de datos de píxeles cargado en memoria
     return pixelData;
-}
-
-
-
-
-// Libera la memoria usada para los datos de enmascaramiento
-if (maskingData != nullptr)
-
 }
 bool exportImage(unsigned char* pixelData, int width,int height, QString archivoSalida){
     // Crear una nueva imagen de salida con el mismo tamaño que la original
@@ -200,6 +165,8 @@ int main(int argc, char *argv[]) {
     }
     if (!verificarEnmascaramiento(P1, M, M1_txt, seed1, n1)) {
         cout << "Error: M1.txt no coincide" << endl;
+        delete[] M1_txt;
+        M1_txt = nullptr;
         return 0;
     }
 
@@ -218,6 +185,8 @@ int main(int argc, char *argv[]) {
     }
     if (!verificarEnmascaramiento(P2, M, M2_txt, seed2, n2)) {
         cout << "Error: M2.txt no coincide" << endl;
+        delete[] M2_txt;
+        M2_txt = nullptr;
         return 0;
     }
 
@@ -232,7 +201,5 @@ int main(int argc, char *argv[]) {
     // Liberar memoria
     delete[] I_O; delete[] I_M; delete[] M;
     delete[] P1; delete[] P2; delete[] P3;
-    delete[] M1_txt; delete[] M2_txt;
-
     return 0;
 }
