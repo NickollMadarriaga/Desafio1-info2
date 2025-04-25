@@ -2,7 +2,7 @@
 #include <iostream>
 #include <QCoreApplication>
 #include <QImage>
-
+#include <filesystem>
 using namespace std;
 unsigned char* loadPixels(QString input, int &width, int &height);
 bool exportImage(unsigned char* pixelData, int width,int height, QString archivoSalida);
@@ -10,6 +10,9 @@ unsigned int* loadSeedMasking(const char* nombreArchivo, int &seed, int &n_pixel
 unsigned char* loadPixels(QString input, int &width, int &height){
     // Cargar la imagen BMP desde el archivo especificado (usando Qt)
     QImage imagen(input);
+
+    std::filesystem::path current = std::filesystem::current_path();
+    std::cout << current.string() << "\n";
 
     // Verifica si la imagen fue cargada correctamente
     if (imagen.isNull()) {
@@ -130,13 +133,25 @@ void rotarImagen(unsigned char* entrada, unsigned char* salida, int size, int bi
     }
 }
 bool verificarEnmascaramiento(unsigned char* generado, unsigned char* mascara, unsigned int* valoresTXT, int seed, int n_pixels) {
+    bool coincide = true;
+
     for (int i = 0; i < n_pixels * 3; i++) {
-        if ((int)(generado[i + seed] + mascara[i]) != valoresTXT[i]) {
-            return false;
+        int suma = (int)generado[i + seed] + (int)mascara[i];
+        int esperado = valoresTXT[i];
+
+        cout << "Suma[" << i << "] = " << suma << " | Valor TXT = " << esperado;
+
+        if (suma != esperado) {
+            cout << " No coinciden" << endl;
+            coincide = false;
+        } else {
+            cout << "Coinciden" << endl;
         }
     }
-    return true;
+
+    return coincide;
 }
+
 // CASO 1
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
@@ -144,10 +159,10 @@ int main(int argc, char *argv[]) {
     int width = 0, height = 0;
 
     // Cargar las imágenes BMP
-    unsigned char* I_O = loadPixels("I_O.bmp", width, height);
-    unsigned char* I_M = loadPixels("I_M.bmp", width, height);
-    unsigned char* M   = loadPixels("M.bmp",   width, height);
-
+    unsigned char* I_O = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\I_O.bmp", width, height);
+    unsigned char* I_M = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\I_M.bmp", width, height);
+    unsigned char* M   = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M.bmp",   width, height);
+    std::cout << "Test1\n";
     int size = width * height * 3;
 
     // Paso 1: P1 = I_O XOR I_M
@@ -156,7 +171,7 @@ int main(int argc, char *argv[]) {
 
     // Verificar enmascaramiento con M1.txt
     int seed1 = 0, n1 = 0;
-    unsigned int* M1_txt = loadSeedMasking("M1.txt", seed1, n1);
+    unsigned int* M1_txt = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M1.txt", seed1, n1);
     for (int i = 0; i < n1 * 3; i += 3) {
         std::cout << "M1 - Pixel " << i / 3 << ": ("
                   << M1_txt[i] << ", "
@@ -167,6 +182,8 @@ int main(int argc, char *argv[]) {
         cout << "Error: M1.txt no coincide" << endl;
         delete[] M1_txt;
         M1_txt = nullptr;
+        delete[] I_O; delete[] I_M;
+        delete[] P1;
         return 0;
     }
 
@@ -176,7 +193,7 @@ int main(int argc, char *argv[]) {
 
     // Verificar enmascaramiento con M2.txt
     int seed2 = 0, n2 = 0;
-    unsigned int* M2_txt = loadSeedMasking("M2.txt", seed2, n2);
+    unsigned int* M2_txt = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M2.txt", seed2, n2);
     for (int i = 0; i < n2 * 3; i += 3) {
         std::cout << "M2 - Pixel " << i / 3 << ": ("
                   << M2_txt[i] << ", "
@@ -187,6 +204,8 @@ int main(int argc, char *argv[]) {
         cout << "Error: M2.txt no coincide" << endl;
         delete[] M2_txt;
         M2_txt = nullptr;
+        delete[] P1;
+        ;
         return 0;
     }
 
@@ -197,9 +216,10 @@ int main(int argc, char *argv[]) {
     // Exportar imagen reconstruida
     exportImage(P3, width, height, "Reconstruida_Caso1.bmp");
     cout << "Reconstrucción del Caso 1 completada." << endl;
-
-    // Liberar memoria
-    delete[] I_O; delete[] I_M; delete[] M;
-    delete[] P1; delete[] P2; delete[] P3;
+    delete[] I_M;
+    delete[] P2;
+    delete[] P3;
     return 0;
 }
+
+
