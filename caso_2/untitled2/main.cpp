@@ -2,6 +2,7 @@
 #include <QImage>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 using namespace std;
 
@@ -13,6 +14,9 @@ bool            verificarEnmascaramiento(unsigned char* img, unsigned char* M, u
 unsigned char* loadPixels(QString input, int &width, int &height){
     // Cargar la imagen BMP desde el archivo especificado (usando Qt)
     QImage imagen(input);
+    std::filesystem::path current = std::filesystem::current_path();
+    std::cout << current.string() << "\n";
+
 
     // Verifica si la imagen fue cargada correctamente
     if (imagen.isNull()) {
@@ -144,8 +148,24 @@ int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
 
     int width = 0, height = 0;
-    unsigned char* ID = loadPixels("ID.bmp", width, height);
-    unsigned char* IM = loadPixels("IM.bmp", width, height);
-    unsigned char* M  = loadPixels("M.bmp",  width, height);
+    unsigned char* ID = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\ID.bmp", width, height);
+    unsigned char* IM = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\I_M.bmp", width, height);
+    unsigned char* M  = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\M.bmp",  width, height);
     int size = width * height * 3;
+
+    // Paso 1: P1 = ID XOR IM
+    unsigned char* P1 = new unsigned char[size];
+    aplicarXOR(ID, IM, P1, size);
+
+    // Carga y verificación de M1.txt
+    int seed1 = 0, n1 = 0;
+    unsigned int* T1 = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\M1.txt", seed1, n1);
+    if (!verificarEnmascaramiento(P1, M, T1, seed1, n1)) {
+        cout << "Error: M1.txt no coincide" << endl;
+    }
+
+    delete[] P1;
+    delete[] T1;
+}
+
 
