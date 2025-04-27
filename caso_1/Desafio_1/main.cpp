@@ -147,18 +147,18 @@ int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
 
     int width_IO = 0, height_IO = 0;
-    unsigned char* I_O = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\I_O.bmp", width_IO, height_IO);
+    unsigned char* I_O = loadPixels("I_O.bmp", width_IO, height_IO);
     int size_IO = width_IO * height_IO * 3;
     int width_IM = 0, height_IM = 0;
-    unsigned char* I_M = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\I_M.bmp", width_IM, height_IM);
+    unsigned char* I_M = loadPixels("I_M.bmp", width_IM, height_IM);
     int size_IM = width_IM * height_IM * 3;
     int width_M = 0, height_M = 0;
-    unsigned char* M   = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M.bmp",   width_M, height_M);
+    unsigned char* M   = loadPixels("M.bmp", width_M, height_M);
 
     unsigned char* P1 = new unsigned char[size_IO];
     aplicarXOR(I_O, I_M, P1, size_IO);
     int seed1 = 0, n1 = 0;
-    unsigned int* M1_txt = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M1.txt", seed1, n1);
+    unsigned int* M1_txt = loadSeedMasking("M1.txt", seed1, n1);
     if (!verificarEnmascaramiento(P1, M, M1_txt, seed1, n1)) {
         cout << "Error: M1.txt no coincide" << endl;
         return 0;
@@ -167,7 +167,7 @@ int main(int argc, char *argv[]) {
     unsigned char* P2 = new unsigned char[size_IO];
     rotarImagen(P1, P2, size_IO, 3);
     int seed2 = 0, n2 = 0;
-    unsigned int* M2_txt = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M2.txt", seed2, n2);
+    unsigned int* M2_txt = loadSeedMasking("M2.txt", seed2, n2);
     if (!verificarEnmascaramiento(P2, M, M2_txt, seed2, n2)) {
         cout << "Error: M2.txt no coincide" << endl;
         return 0;
