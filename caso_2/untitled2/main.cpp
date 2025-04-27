@@ -218,7 +218,26 @@ int main(int argc, char *argv[]) {
         cout << "Error: M6.txt no coincide" << endl; return 0;
     }
 
-    exportImage(P6, width_IM, height_IM, "Reconstruida_Caso2.bmp");
+    unsigned char* R5 = new unsigned char[size_IM];
+    rotarImagen(P6, R5, size_IM, 6);
+
+    unsigned char* R4 = new unsigned char[size_IM];
+    aplicarXOR(R5, IM, R4, size_IM);
+
+    unsigned char* R3 = new unsigned char[size_IM];
+    rotarImagen(R4, R3, size_IM, 3);
+
+    unsigned char* R2 = new unsigned char[size_IM];
+    aplicarXOR(R3, IM, R2, size_IM);
+
+    unsigned char* R1 = new unsigned char[size_IO];
+    rotarImagen(R2, R1, size_IO, 4);
+
+    unsigned char* imagenReconstruida = new unsigned char[size_IO];
+    aplicarXOR(R1, IM, imagenReconstruida, size_IO);
+
+
+    exportImage(imagenReconstruida, width_IM, height_IM, "Reconstruida_Caso2.bmp");
     cout << "Imagen reconstruida correctamente." << endl;
 
     delete[] IO; delete[] IM; delete[] M;
@@ -226,6 +245,8 @@ int main(int argc, char *argv[]) {
     delete[] P4; delete[] P5; delete[] P6;
     delete[] T1; delete[] T2; delete[] T3;
     delete[] T4; delete[] T5; delete[] T6;
+    delete[] R5; delete[] R4; delete[] R3;
+    delete[] R2; delete[] R1; delete[] imagenReconstruida;
 
     return 0;
 }

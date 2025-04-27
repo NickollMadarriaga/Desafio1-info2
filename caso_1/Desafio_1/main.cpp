@@ -133,23 +133,13 @@ void rotarImagen(unsigned char* entrada, unsigned char* salida, int size, int bi
     }
 }
 bool verificarEnmascaramiento(unsigned char* generado, unsigned char* mascara, unsigned int* valoresTXT, int seed, int n_pixels) {
-    bool coincide = true;
-
     for (int i = 0; i < n_pixels * 3; i++) {
-        int suma = (int)generado[i + seed] + (int)mascara[i];
-        int esperado = valoresTXT[i];
-
-        cout << "Suma[" << i << "] = " << suma << " | Valor TXT = " << esperado;
-
-        if (suma != esperado) {
-            cout << " No coinciden" << endl;
-            coincide = false;
-        } else {
-            cout << "Coinciden" << endl;
+        if ((int)(generado[i + seed] + mascara[i]) != valoresTXT[i]) {
+            return false;
         }
     }
+    return true;
 
-    return coincide;
 }
 
 // CASO 1
@@ -165,60 +155,49 @@ int main(int argc, char *argv[]) {
     int width_M = 0, height_M = 0;
     unsigned char* M   = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M.bmp",   width_M, height_M);
 
-    // Paso 1: P1 = I_O XOR I_M
     unsigned char* P1 = new unsigned char[size_IO];
     aplicarXOR(I_O, I_M, P1, size_IO);
-
-    // Verificar enmascaramiento con M1.txt
     int seed1 = 0, n1 = 0;
     unsigned int* M1_txt = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M1.txt", seed1, n1);
-    for (int i = 0; i < n1 * 3; i += 3) {
-        std::cout << "M1 - Pixel " << i / 3 << ": ("
-                  << M1_txt[i] << ", "
-                  << M1_txt[i + 1] << ", "
-                  << M1_txt[i + 2] << ")" << std::endl;
-    }
     if (!verificarEnmascaramiento(P1, M, M1_txt, seed1, n1)) {
         cout << "Error: M1.txt no coincide" << endl;
-        delete[] M1_txt;
-        M1_txt = nullptr;
-        delete[] I_O; delete[] I_M;
-        delete[] P1;
         return 0;
     }
 
-    // Paso 2: P2 = rotar derecha P1 (3 bits)
     unsigned char* P2 = new unsigned char[size_IO];
     rotarImagen(P1, P2, size_IO, 3);
-
-    // Verificar enmascaramiento con M2.txt
     int seed2 = 0, n2 = 0;
     unsigned int* M2_txt = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M2.txt", seed2, n2);
-    for (int i = 0; i < n2 * 3; i += 3) {
-        std::cout << "M2 - Pixel " << i / 3 << ": ("
-                  << M2_txt[i] << ", "
-                  << M2_txt[i + 1] << ", "
-                  << M2_txt[i + 2] << ")" << std::endl;
-    }
     if (!verificarEnmascaramiento(P2, M, M2_txt, seed2, n2)) {
         cout << "Error: M2.txt no coincide" << endl;
-        delete[] M2_txt;
-        M2_txt = nullptr;
-        delete[] P1;
-        ;
         return 0;
     }
 
-    // Paso 3: P3 = P2 XOR I_M → imagen reconstruida
     unsigned char* P3 = new unsigned char[size_IM];
     aplicarXOR(P2, I_M, P3, size_IM);
 
-    // Exportar imagen reconstruida
-    exportImage(P3, width_IM, height_IM, "Reconstruida_Caso1.bmp");
+   //Reconstrucción Caso 1
+    unsigned char* R1 = new unsigned char[size_IM];
+    aplicarXOR(P3, I_M, R1, size_IM);
+    unsigned char* R2 = new unsigned char[size_IM];
+    rotarImagen(R1, R2, size_IM, 5);
+
+    unsigned char* R3 = new unsigned char[size_IM];
+    aplicarXOR(R2, I_M, R3, size_IM);
+
+    exportImage(R3, width_IM, height_IM, "Reconstruida_Caso1.bmp");
     cout << "Reconstrucción del Caso 1 completada." << endl;
     delete[] I_M;
+    delete[] I_O;
+    delete[] M;
+    delete[] P1;
     delete[] P2;
     delete[] P3;
+    delete[] M2_txt;
+    delete[] M1_txt;
+    delete[] R1;
+    delete[] R2;
+    delete[] R3;
     return 0;
 }
 
