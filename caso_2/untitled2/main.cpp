@@ -147,15 +147,21 @@ bool verificarEnmascaramiento(unsigned char* generado, unsigned char* mascara, u
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
 
-    int width = 0, height = 0;
-    unsigned char* ID = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\ID.bmp", width, height);
-    unsigned char* IM = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\I_M.bmp", width, height);
-    unsigned char* M  = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\M.bmp",  width, height);
-    int size = width * height * 3;
+    int width_IO = 0, height_IO = 0;
+    unsigned char* IO = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\I_O.bmp", width_IO, height_IO);
+    int size_IO = width_IO * height_IO * 3;
+    int width_IM = 0, height_IM = 0;
+    unsigned char* IM = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\I_M.bmp", width_IM, height_IM);
+    int size_IM = width_IM * height_IM * 3;
+    int width_M = 0, height_M = 0;
+    unsigned char* M  = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\M.bmp",  width_M, height_M);
+    // int size_M = width_M * height_M * 3;
 
-    // Paso 1: P1 = ID XOR IM
-    unsigned char* P1 = new unsigned char[size];
-    aplicarXOR(ID, IM, P1, size);
+    // Paso 1: P1 = IO XOR IM
+    unsigned char* P1 = new unsigned char[size_IO];
+    cout <<"tamaño"<<size_IO<< endl;
+
+    aplicarXOR(IO, IM, P1, size_IO);
     int seed1 = 0, n1 = 0;
     unsigned int* T1 = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\M1.txt", seed1, n1);
     if (!verificarEnmascaramiento(P1, M, T1, seed1, n1)) {
@@ -164,17 +170,17 @@ int main(int argc, char *argv[]) {
 
 
     // Paso 2: Rotar P1 2 bits → P2
-    unsigned char* P2 = new unsigned char[size];
-    rotarImagen(P1, P2, size, 2);
+    unsigned char* P2 = new unsigned char[size_IO];
+    rotarImagen(P1, P2, size_IO, 2);
     int seed2 = 0, n2 = 0;
     unsigned int* T2 = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\M2.txt", seed2, n2);
     if (!verificarEnmascaramiento(P2, M, T2, seed2, n2)) {
-        cout << "Error: M2.txt no coincide" << endl; return 0;
+        cout << "Error: M2.txt no coincide" << endl;
     }
 
     // Paso 3: P2 XOR IM → P3
-    unsigned char* P3 = new unsigned char[size];
-    aplicarXOR(P2, IM, P3, size);
+    unsigned char* P3 = new unsigned char[size_IM];
+    aplicarXOR(P2, IM, P3, size_IM);
     int seed3 = 0, n3 = 0;
     unsigned int* T3 = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\M3.txt", seed3, n3);
     if (!verificarEnmascaramiento(P3, M, T3, seed3, n3)) {
@@ -182,8 +188,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Paso 4: Rotar P3 3 bits → P4
-    unsigned char* P4 = new unsigned char[size];
-    rotarImagen(P3, P4, size, 3);
+    unsigned char* P4 = new unsigned char[size_IM];
+    rotarImagen(P3, P4, size_IM, 3);
     int seed4 = 0, n4 = 0;
     unsigned int* T4 = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\M4.txt", seed4, n4);
     if (!verificarEnmascaramiento(P4, M, T4, seed4, n4)) {
@@ -191,8 +197,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Paso 5: P4 XOR IM → P5
-    unsigned char* P5 = new unsigned char[size];
-    aplicarXOR(P4, IM, P5, size);
+    unsigned char* P5 = new unsigned char[size_IM];
+    aplicarXOR(P4, IM, P5, size_IM);
     int seed5 = 0, n5 = 0;
     unsigned int* T5 = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\M5.txt", seed5, n5);
     if (!verificarEnmascaramiento(P5, M, T5, seed5, n5)) {
@@ -200,18 +206,18 @@ int main(int argc, char *argv[]) {
     }
 
     // Paso 6: Rotar P5 1 bit → P6
-    unsigned char* P6 = new unsigned char[size];
-    rotarImagen(P5, P6, size, 1);
+    unsigned char* P6 = new unsigned char[size_IM];
+    rotarImagen(P5, P6, size_IM, 1);
     int seed6 = 0, n6 = 0;
     unsigned int* T6 = loadSeedMasking("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_2\\untitled2\\M6.txt", seed6, n6);
     if (!verificarEnmascaramiento(P6, M, T6, seed6, n6)) {
         cout << "Error: M6.txt no coincide" << endl; return 0;
     }
 
-    exportImage(P6, width, height, "Reconstruida_Caso2.bmp");
+    exportImage(P6, width_IM, height_IM, "Reconstruida_Caso2.bmp");
     cout << "Imagen reconstruida correctamente." << endl;
 
-    delete[] ID; delete[] IM; delete[] M;
+    delete[] IO; delete[] IM; delete[] M;
     delete[] P1; delete[] P2; delete[] P3;
     delete[] P4; delete[] P5; delete[] P6;
     delete[] T1; delete[] T2; delete[] T3;

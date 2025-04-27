@@ -156,18 +156,22 @@ bool verificarEnmascaramiento(unsigned char* generado, unsigned char* mascara, u
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
 
-    int width = 0, height = 0;
+    int width_IO = 0, height_IO = 0;
+    unsigned char* I_O = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\I_O.bmp", width_IO, height_IO);
+    int size_IO = width_IO * height_IO * 3;
+    int width_IM = 0, height_IM = 0;
+    unsigned char* I_M = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\I_M.bmp", width_IM, height_IM);
+    int size_IM = width_IM * height_IM * 3;
+    int width_M = 0, height_M = 0;
+    unsigned char* M   = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M.bmp",   width_M, height_M);
+    //int size = width * height * 3;
 
-    // Cargar las imágenes BMP
-    unsigned char* I_O = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\I_O.bmp", width, height);
-    unsigned char* I_M = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\I_M.bmp", width, height);
-    unsigned char* M   = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M.bmp",   width, height);
     std::cout << "Test1\n";
-    int size = width * height * 3;
+    //int size = width * height * 3;
 
     // Paso 1: P1 = I_O XOR I_M
-    unsigned char* P1 = new unsigned char[size];
-    aplicarXOR(I_O, I_M, P1, size);
+    unsigned char* P1 = new unsigned char[size_IO];
+    aplicarXOR(I_O, I_M, P1, size_IO);
 
     // Verificar enmascaramiento con M1.txt
     int seed1 = 0, n1 = 0;
@@ -188,8 +192,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Paso 2: P2 = rotar derecha P1 (3 bits)
-    unsigned char* P2 = new unsigned char[size];
-    rotarImagen(P1, P2, size, 3);
+    unsigned char* P2 = new unsigned char[size_IO];
+    rotarImagen(P1, P2, size_IO, 3);
 
     // Verificar enmascaramiento con M2.txt
     int seed2 = 0, n2 = 0;
@@ -210,11 +214,11 @@ int main(int argc, char *argv[]) {
     }
 
     // Paso 3: P3 = P2 XOR I_M → imagen reconstruida
-    unsigned char* P3 = new unsigned char[size];
-    aplicarXOR(P2, I_M, P3, size);
+    unsigned char* P3 = new unsigned char[size_IM];
+    aplicarXOR(P2, I_M, P3, size_IM);
 
     // Exportar imagen reconstruida
-    exportImage(P3, width, height, "Reconstruida_Caso1.bmp");
+    exportImage(P3, width_IM, height_IM, "Reconstruida_Caso1.bmp");
     cout << "Reconstrucción del Caso 1 completada." << endl;
     delete[] I_M;
     delete[] P2;
