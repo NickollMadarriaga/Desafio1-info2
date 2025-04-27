@@ -164,10 +164,6 @@ int main(int argc, char *argv[]) {
     int size_IM = width_IM * height_IM * 3;
     int width_M = 0, height_M = 0;
     unsigned char* M   = loadPixels("C:\\Users\\nicko\\OneDrive\\Documentos\\GitHub\\Desafio1-info2\\caso_1\\Desafio_1\\M.bmp",   width_M, height_M);
-    //int size = width * height * 3;
-
-    std::cout << "Test1\n";
-    //int size = width * height * 3;
 
     // Paso 1: P1 = I_O XOR I_M
     unsigned char* P1 = new unsigned char[size_IO];
